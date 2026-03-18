@@ -12,7 +12,13 @@ int main()
     cin>>alto;
     cout<<"Ingrese por favor el ancho del tablero (multiplos de 8): "<<endl;
     cin>>ancho;
-    crearTablero(alto,ancho);
+    if (!dimensionesValidas(alto,ancho)){
+        cout<<"Dimensiones invalidas"<<endl;
+    }
+    tablero=crearTablero(alto,ancho);
+    inciarSemilla();
+
+    juego(tablero,alto,ancho);
     liberarTablero(tablero,alto);
 
     return 0;
