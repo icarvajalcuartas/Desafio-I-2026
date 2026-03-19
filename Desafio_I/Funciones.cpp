@@ -96,7 +96,41 @@ bool colision(unsigned char **tablero, unsigned short int alto, unsigned short i
     return false;
 
 }
+void imprimirTablero(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, int filapieza, int colpieza)
+{
+    cout<<endl;
+    for (int i = 0;i<alto; i++){
+        cout << "<3"<<endl;
+        for(int j=0; j<ancho;j++){
+            bool ocupado=bitTablero(tablero,i,j);
+            bool piezaactual=false;
+            for (int f=0;f<4;f++){
+                for (int c=0;c<8;c++){
+                    if (bitPieza(pieza,f,c)){
+                        if((filapieza+f==i)&& (colpieza + c == j )){
+                            piezaactual=true;
+                        }
+                    }
+                }
+            }
+            if (ocupado || piezaactual){
+                cout<<"Ll";
+            }
+            else {
+                cout<< " .";
+            }
+        }
+        cout<<"<3"<<endl;
+    }
+    cout<< "<3";
+    for (int i = 0;i<ancho;i++){
+        cout<<"__";
+    }
+    cout<<"<3"<<endl;
+    cout<<"[A] IZQUIERDA [D] DERECHA [S] ABAJO [W] ROTAR [Q] SALIR"<<endl;
 
+
+}
 void juego(unsigned char **tablero, unsigned short int alto, unsigned short int ancho)
 {
     unsigned char pieza[4];
@@ -104,16 +138,26 @@ void juego(unsigned char **tablero, unsigned short int alto, unsigned short int 
     int fila = 0;
     int col = (ancho/2)-4;
     bool gameOver = false;
+    char accion;
 
     generarPieza(pieza,tipo);
 
     if (colision(tablero,alto,ancho,pieza,fila,col)) {
         gameOver = true;
     }
+    while (!gameOver){
+        imprimirTablero(tablero,alto,ancho,pieza,fila,col);
+        cout<<"Presione la tecla (W,S,D,A) para la accion: ";
+        cin >> accion;
+
+
+    }
     if(gameOver){
         cout<<"*****GAME OVER***** <3"<<endl;
     }
 }
+
+
 
 
 
