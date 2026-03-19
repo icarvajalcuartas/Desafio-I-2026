@@ -16,7 +16,7 @@ int main()
         cout<<"Dimensiones invalidas"<<endl;
     }
     tablero=crearTablero(alto,ancho);
-    inciarSemilla();
+    iniciarSemilla();
 
     juego(tablero,alto,ancho);
     liberarTablero(tablero,alto);
