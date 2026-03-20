@@ -11,4 +11,6 @@ bool colision (unsigned char **tablero, unsigned short int alto, unsigned short 
 bool bitPieza(unsigned char *pieza, int fila, int col);
 bool bitTablero(unsigned char **tablero,int fila,int col);
 void imprimirTablero(unsigned char **tablero, unsigned short int alto, unsigned short int ancho, unsigned char *pieza, int filapieza, int colpieza);
+bool moverIzq(unsigned char **tablero,unsigned short int alto, unsigned short int ancho, unsigned char *pieza, int filapieza, int &colpieza);
+bool moverDer(unsigned char **tablero,unsigned short int alto,unsigned int ancho,unsigned char *pieza,int filapieza, int &colpieza);
 #endif // FUNCIONES_H
