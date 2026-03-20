@@ -38,7 +38,7 @@ void liberarTablero(unsigned char**tablero,unsigned short int alto){
     delete [] tablero;
 }
 
-void inciarSemilla()
+void iniciarSemilla()
 {
     srand(time(0));
 }
@@ -100,7 +100,7 @@ void imprimirTablero(unsigned char **tablero, unsigned short alto, unsigned shor
 {
     cout<<endl;
     for (int i = 0;i<alto; i++){
-        cout << "<3"<<endl;
+        cout << "<3";
         for(int j=0; j<ancho;j++){
             bool ocupado=bitTablero(tablero,i,j);
             bool piezaactual=false;
@@ -128,9 +128,25 @@ void imprimirTablero(unsigned char **tablero, unsigned short alto, unsigned shor
     }
     cout<<"<3"<<endl;
     cout<<"[A] IZQUIERDA [D] DERECHA [S] ABAJO [W] ROTAR [Q] SALIR"<<endl;
-
-
 }
+bool moverIzq(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, int filapieza, int &colpieza)
+{
+    if(!colision(tablero,alto,ancho,pieza,filapieza,colpieza-1)){
+        colpieza--;
+        return true;
+    }
+    return false;
+}
+bool moverDer(unsigned char **tablero, unsigned short alto, unsigned int ancho, unsigned char *pieza, int filapieza, int &colpieza)
+{
+    if(!colision(tablero,alto,ancho,pieza,filapieza,colpieza+1)){
+        colpieza++;
+        return true;
+    }
+    return false;
+}
+
+
 void juego(unsigned char **tablero, unsigned short int alto, unsigned short int ancho)
 {
     unsigned char pieza[4];
@@ -149,13 +165,21 @@ void juego(unsigned char **tablero, unsigned short int alto, unsigned short int 
         imprimirTablero(tablero,alto,ancho,pieza,fila,col);
         cout<<"Presione la tecla (W,S,D,A) para la accion: ";
         cin >> accion;
-
+        if(accion=='a'||accion=='A'){
+            moverIzq(tablero,alto,ancho,pieza,fila,col);
+        }
+        else if (accion=='d'||accion=='D'){
+            moverDer(tablero,alto,ancho,pieza,fila,col);
+        }
 
     }
     if(gameOver){
         cout<<"*****GAME OVER***** <3"<<endl;
     }
 }
+
+
+
 
 
 
