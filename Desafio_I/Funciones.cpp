@@ -38,7 +38,7 @@ void liberarTablero(unsigned char**tablero,unsigned short int alto){
     delete [] tablero;
 }
 
-void inciarSemilla()
+void iniciarSemilla()
 {
     srand(time(0));
 }
