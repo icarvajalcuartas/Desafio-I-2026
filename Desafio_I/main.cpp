@@ -8,12 +8,13 @@ int main()
     unsigned short int ancho=0;
     unsigned short int alto=0;
     unsigned char **tablero;
-    cout<<"Ingrese por favor el alto del tablero: "<<endl;
+    cout<<"Ingrese por favor el alto del tablero (Minimo 8): "<<endl;
     cin>>alto;
     cout<<"Ingrese por favor el ancho del tablero (multiplos de 8): "<<endl;
     cin>>ancho;
     if (!dimensionesValidas(alto,ancho)){
         cout<<"Dimensiones invalidas"<<endl;
+        return 1;
     }
     tablero=crearTablero(alto,ancho);
     iniciarSemilla();

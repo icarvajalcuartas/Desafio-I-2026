@@ -43,7 +43,7 @@ void iniciarSemilla()
     srand(time(0));
 }
 
-void generarPieza(unsigned char *pieza,unsigned short int &tipo )
+void generarPieza(unsigned char *pieza,int &tipo )
 {
     unsigned char piezas[5][4]={
     {0b00010000,0b00010000,0b00010000,0b00010000},
@@ -68,15 +68,24 @@ bool bitPieza(unsigned char *pieza, short int fila, short int col)
 }
 bool bitTablero(unsigned char **tablero, short int fila, short int col)
 {
-    short int iByte=col/8;
-    short int iBit=col%8;
+    short int iByte=col / 8;
+    short int iBit=col % 8;
     unsigned char mascara = (unsigned char)(1<<(7-iBit));
-    return (tablero[fila][iByte] &mascara)!=0;
+    return (tablero[fila][iByte] &mascara)!=0;    
+}
 
+void onBitTablero(unsigned char **tablero, int fila, int col)
+{
+    int indiceByte=col/8;
+    int indiceBit=col%8;
+    unsigned char mascara = (unsigned char)(1<<(7-indiceBit));
+    tablero[fila][indiceByte]= (unsigned char)(tablero[fila][indiceByte]|mascara);
 
 }
+
 bool colision(unsigned char **tablero, unsigned short int alto, unsigned short int ancho, unsigned char *pieza, short int fila, short int columna)
-{for (short int f=0;f<4;f++){
+{
+    for (short int f=0;f<4;f++){
         for (short int c=0;c<8;c++){
             if (bitPieza(pieza,f,c)){
                 short int filareal = fila+f;
@@ -96,6 +105,23 @@ bool colision(unsigned char **tablero, unsigned short int alto, unsigned short i
     return false;
 
 }
+void fijarPieza(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, int fila, int columna)
+{
+    for (int f=0;f<4;f++) {
+        for(int c=0;c<8;c++){
+            if (bitPieza(pieza,f,c)){
+                int filaReal=fila+f;
+                int colReal=columna+c;
+
+                if (filaReal>=0 && filaReal<alto && colReal>=0 && colReal<ancho){
+                    onBitTablero(tablero,filaReal,colReal);
+                }
+            }
+        }
+    }
+}
+
+
 void imprimirTablero(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, short int filapieza, short int colpieza)
 {
     cout<<endl;
@@ -129,6 +155,42 @@ void imprimirTablero(unsigned char **tablero, unsigned short alto, unsigned shor
     cout<<"<3"<<endl;
     cout<<"[A] IZQUIERDA [D] DERECHA [S] ABAJO [W] ROTAR [Q] SALIR"<<endl;
 }
+
+bool filallena(unsigned char *fila, unsigned short ancho)
+{
+    int anchoBytes = ancho/8;
+
+    for (int i=0;i<anchoBytes;i++){
+        if (fila[i] != 0xFF){
+            return false;
+        }
+    }
+    return true;
+}
+
+
+void limpiarfilas(unsigned char **tablero, unsigned short alto, unsigned short ancho)
+{
+    int anchoBytes=ancho/8;
+    for (int i=alto-1; i>=0;i--){
+        if (filallena(tablero[i],ancho)){
+            delete[] tablero [i];
+
+            for (int k=i;k>0;k--){
+                tablero [k]= tablero[k-1];
+            }
+            tablero[0]=new unsigned char [anchoBytes];
+            for (int j = 0; j < anchoBytes; j++) {
+                tablero [0][j]=0;
+
+            }
+            i++;
+        }
+
+    }
+}
+
+
 bool moverIzq(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, short int filapieza, short int &colpieza)
 {
     if(!colision(tablero,alto,ancho,pieza,filapieza,colpieza-1)){
@@ -177,7 +239,7 @@ void rotar90(unsigned char *piezaOrg, unsigned char *piezaRot)
     }
 }
 
-bool intentarRot(unsigned char **tablero, unsigned short alto, unsigned short ancho, unsigned char *pieza, short filapieza, short colpieza)
+bool intentarRot(unsigned char **tablero, unsigned short int alto, unsigned short int ancho, unsigned char *pieza, short filapieza, short colpieza)
 {
     unsigned char piezarot[4];
     rotar90(pieza,piezarot);
@@ -191,10 +253,33 @@ bool intentarRot(unsigned char **tablero, unsigned short alto, unsigned short an
 
 }
 
+bool bajar(unsigned char **tablero, unsigned short int alto, unsigned short ancho, unsigned char *pieza, int &tipo, short int &filapieza, short int &colpieza, bool &gameOver)
+{
+    if(!colision(tablero,alto,ancho,pieza,filapieza+1,colpieza)){
+        filapieza++;
+        return true;
+    }
+
+    fijarPieza(tablero,alto,ancho,pieza,filapieza,colpieza);
+    limpiarfilas(tablero,alto,ancho);
+
+    filapieza=0;
+    colpieza=(ancho/2)-4;
+    generarPieza(pieza,tipo);
+
+    if (colision(tablero,alto,ancho,pieza,filapieza,colpieza)){
+        gameOver=true;
+    }
+
+    return false;
+
+}
+
+
 void juego(unsigned char **tablero, unsigned short int alto, unsigned short int ancho)
 {
     unsigned char pieza[4];
-    unsigned short int tipo = 0;
+    int tipo = 0;
     short int fila = 0;
     short int col = (ancho/2)-4;
     bool gameOver = false;
@@ -214,9 +299,13 @@ void juego(unsigned char **tablero, unsigned short int alto, unsigned short int 
         }
         else if (accion=='d'||accion=='D'){
             moverDer(tablero,alto,ancho,pieza,fila,col);
+
         }
         else if(accion=='w'||accion=='W'){
             intentarRot(tablero,alto,ancho,pieza,fila,col);
+        }
+        else if (accion=='s'||accion=='S'){
+            bajar(tablero,alto,ancho,pieza,tipo,fila,col,gameOver);
         }
 
     }
@@ -224,6 +313,13 @@ void juego(unsigned char **tablero, unsigned short int alto, unsigned short int 
         cout<<"*****GAME OVER***** <3"<<endl;
     }
 }
+
+
+
+
+
+
+
 
 
 
