@@ -307,6 +307,9 @@ void juego(unsigned char **tablero, unsigned short int alto, unsigned short int 
         else if (accion=='s'||accion=='S'){
             bajar(tablero,alto,ancho,pieza,tipo,fila,col,gameOver);
         }
+        else if(accion=='q'||accion=='Q'){
+            break;
+        }
 
     }
     if(gameOver){
